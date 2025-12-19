@@ -3,11 +3,10 @@ import { prisma } from '@/lib/prisma';
 import stripe from '@/lib/stripe';
 
 // Stripe requires the raw body to validate the signature
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const preferredRegion = 'auto';
 
 export async function POST(req: NextRequest) {
   const sig = req.headers.get('stripe-signature');
