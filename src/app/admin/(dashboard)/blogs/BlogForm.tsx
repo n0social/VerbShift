@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image';
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Trash2 } from 'lucide-react'
@@ -291,11 +292,17 @@ export default function BlogForm({ blog, categories, dashboardContext }: BlogFor
               placeholder="https://example.com/image.jpg"
             />
             {formData.coverImage && (
-              <img
-                src={formData.coverImage}
-                alt="Cover preview"
-                className="mt-4 rounded-lg w-full h-32 object-cover"
-              />
+                <div className="mt-4 rounded-lg w-full h-32 relative">
+                  <Image
+                    src={formData.coverImage}
+                    alt="Cover preview"
+                    fill
+                    className="object-cover rounded-lg"
+                    style={{ objectFit: 'cover' }}
+                    sizes="100vw"
+                    priority={true}
+                  />
+                </div>
             )}
           </div>
         </div>

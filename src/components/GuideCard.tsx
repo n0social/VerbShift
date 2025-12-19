@@ -78,11 +78,15 @@ export default function GuideCard({
             {formatDate(createdAt)}
           </time>
           <span className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
-            {readTime} min read
-          </span>
-          {views !== undefined && (
-            <span className="flex items-center gap-1">
+                <Image
+                  src={coverImage}
+                  alt={title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  style={{ objectFit: 'cover' }}
+                  sizes="100vw"
+                  priority={featured}
+                />
               <Eye className="h-4 w-4" />
               {views}
             </span>

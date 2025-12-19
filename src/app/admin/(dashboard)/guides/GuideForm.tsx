@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Trash2, Eye, Wand2 } from 'lucide-react'
 import { MarkdownEditor } from '@/components'
+import Image from 'next/image';
 import { slugify, calculateReadTime } from '@/lib/utils'
 
 interface Category {
@@ -292,11 +293,17 @@ export default function GuideForm({ guide, categories, dashboardContext }: Guide
               placeholder="https://example.com/image.jpg"
             />
             {formData.coverImage && (
-              <img
-                src={formData.coverImage}
-                alt="Cover preview"
-                className="mt-4 rounded-lg w-full h-32 object-cover"
-              />
+              <div className="mt-4 rounded-lg w-full h-32 relative">
+                <Image
+                  src={formData.coverImage}
+                  alt="Cover preview"
+                  fill
+                  className="object-cover rounded-lg"
+                  style={{ objectFit: 'cover' }}
+                  sizes="100vw"
+                  priority={true}
+                />
+              </div>
             )}
           </div>
         </div>

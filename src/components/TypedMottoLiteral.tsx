@@ -33,7 +33,7 @@ export default function TypedMottoLiteral() {
       }, 500);
       return () => clearInterval(cursorInterval);
     }
-  }, [displayed]);
+  }, [displayed, mottoArr.length]);
 
   return (
     <span className="inline-block text-primary text-7xl font-extrabold tracking-tight">
