@@ -41,7 +41,7 @@ export default async function BlogsDashboardPage({ searchParams }: { searchParam
       <div>
         <h2 className="text-xl font-bold mb-4">Your Blogs</h2>
         {userBlogs.length === 0 ? (
-          <p className="text-gray-500">You haven't created any blogs yet.</p>
+          <p className="text-gray-500">You haven&apos;t created any blogs yet.</p>
         ) : (
           <ul className="space-y-4">
             {userBlogs.map((blog) => (

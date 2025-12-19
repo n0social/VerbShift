@@ -40,7 +40,7 @@ export default function PrivacyPage() {
         <li>You can disable cookies in your browser settings, but some features may not work as intended.</li>
       </ul>
 
-      <h2 className="text-xl font-semibold mt-8 mb-2">6. Children's Privacy</h2>
+      <h2 className="text-xl font-semibold mt-8 mb-2">6. Children&apos;s Privacy</h2>
       <p className="mb-4 text-gray-700">Our services are not intended for children under 13. We do not knowingly collect personal information from children under 13.</p>
 
       <h2 className="text-xl font-semibold mt-8 mb-2">7. Changes to This Policy</h2>

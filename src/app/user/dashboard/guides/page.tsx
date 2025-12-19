@@ -40,7 +40,7 @@ export default async function GuidesDashboardPage({ searchParams }: { searchPara
       <div>
         <h2 className="text-xl font-bold mb-4">Your Guides</h2>
         {userGuides.length === 0 ? (
-          <p className="text-gray-500">You haven't created any guides yet.</p>
+          <p className="text-gray-500">You haven&apos;t created any guides yet.</p>
         ) : (
           <ul className="space-y-4">
             {userGuides.map((guide) => (

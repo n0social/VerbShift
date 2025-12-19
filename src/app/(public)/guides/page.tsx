@@ -85,7 +85,7 @@ export default async function GuidesPage({ searchParams }: GuidesPageProps) {
         {/* Results info */}
         {searchParams.q && (
           <p className="mb-6 text-gray-600">
-            {guides.length} result{guides.length !== 1 ? 's' : ''} for "{searchParams.q}"
+            {guides.length} result{guides.length !== 1 ? 's' : ''} for &quot;{searchParams.q}&quot;
           </p>
         )}
 
@@ -113,7 +113,7 @@ export default async function GuidesPage({ searchParams }: GuidesPageProps) {
             <div className="text-6xl mb-4">📚</div>
             <h3 className="text-lg font-medium text-gray-900">No guides found</h3>
             <p className="mt-2 text-gray-600">
-              Try adjusting your search or filter to find what you're looking for.
+              Try adjusting your search or filter to find what you&apos;re looking for.
             </p>
           </div>
         )}

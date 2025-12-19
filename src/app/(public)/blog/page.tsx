@@ -85,7 +85,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         {/* Results info */}
         {searchParams.q && (
           <p className="mb-6 text-gray-600">
-            {blogs.length} result{blogs.length !== 1 ? 's' : ''} for "{searchParams.q}"
+            {blogs.length} result{blogs.length !== 1 ? 's' : ''} for &quot;{searchParams.q}&quot;
           </p>
         )}
 
@@ -113,7 +113,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             <div className="text-6xl mb-4">📝</div>
             <h3 className="text-lg font-medium text-gray-900">No posts found</h3>
             <p className="mt-2 text-gray-600">
-              Try adjusting your search or filter to find what you're looking for.
+              Try adjusting your search or filter to find what you&apos;re looking for.
             </p>
           </div>
         )}
