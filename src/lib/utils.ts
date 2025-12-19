@@ -1,3 +1,14 @@
+// Generate a secure random CSRF token
+export function generateCsrfToken(): string {
+  if (typeof window !== 'undefined' && window.crypto) {
+    return Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+  } else {
+    // fallback for server-side (not used in browser)
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  }
+}
 import { type ClassValue, clsx } from 'clsx'
 
 export function cn(...inputs: ClassValue[]) {

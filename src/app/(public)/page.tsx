@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight, Sparkles, BookOpen, FileText, Zap, Users, TrendingUp } from 'lucide-react'
+import TypedMottoLiteral from '@/components/TypedMottoLiteral'
 import { prisma } from '@/lib/prisma'
 import { GuideCard } from '@/components'
 
@@ -10,13 +11,21 @@ async function getFeaturedContent() {
       include: { category: true, author: true },
       orderBy: { createdAt: 'desc' },
       take: 4,
-    }),
+    }).then((guides) => guides.map((guide) => ({
+      ...guide,
+      createdAt: guide.createdAt.toISOString(),
+    }))),
+
     prisma.blog.findMany({
       where: { published: true },
       include: { category: true, author: true },
       orderBy: { createdAt: 'desc' },
       take: 3,
-    }),
+    }).then((blogs) => blogs.map((blog) => ({
+      ...blog,
+      createdAt: blog.createdAt.toISOString(),
+    }))),
+
     prisma.category.findMany({
       include: {
         _count: {
@@ -35,28 +44,18 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-accent-50">
+      <section className="relative overflow-hidden bg-background">
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-8 flex justify-center">
-              <div className="relative rounded-full bg-gradient-to-r from-primary-500/10 to-accent-500/10 px-4 py-1.5 text-sm font-medium text-primary-600 ring-1 ring-primary-500/20">
-                <span className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Your AI Learning Journey Starts Here
-                </span>
-              </div>
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Master AI with{' '}
-              <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                Expert Guides
-              </span>
+            {/* Removed 'Your AI Learning Journey Starts Here' */}
+            <h1 className="text-4xl font-bold tracking-tight text-secondary sm:text-6xl">
+              <TypedMottoLiteral />
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Comprehensive tutorials, practical guides, and the latest insights to help you harness the power of artificial intelligence.
+              Professional Prose, Programmatically Generated.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-4">
+            <div className="mt-10 flex items-center justify-center gap-4 relative z-20">
               <Link href="/guides" className="btn-primary">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Explore Guides
@@ -118,7 +117,7 @@ export default async function HomePage() {
             <p className="mt-2 text-gray-600">Find guides tailored to your interests</p>
           </div>
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {categories.map((category) => (
+            {categories.map((category: { id: string; name: string; slug: string; color: string; _count: { guides: number } }) => (
               <Link
                 key={category.id}
                 href={`/guides?category=${category.slug}`}
@@ -161,13 +160,13 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {guides.map((guide, index) => (
+            {guides.map((guide: { id: string; title: string; slug: string; excerpt: string; coverImage: string | null; category: { name: string; slug: string; color: string }; readTime: number; views: number; createdAt: string }, index: number) => (
               <GuideCard
                 key={guide.id}
                 title={guide.title}
                 excerpt={guide.excerpt}
                 slug={guide.slug}
-                coverImage={guide.coverImage}
+                coverImage={guide.coverImage || '/images/default-cover.jpg'}
                 category={guide.category}
                 readTime={guide.readTime}
                 views={guide.views}
@@ -203,13 +202,13 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {blogs.map((blog) => (
+            {blogs.map((blog: { id: string; title: string; slug: string; excerpt: string; coverImage: string | null; category: { name: string; slug: string; color: string }; readTime: number; views: number; createdAt: string }) => (
               <GuideCard
                 key={blog.id}
                 title={blog.title}
                 excerpt={blog.excerpt}
                 slug={blog.slug}
-                coverImage={blog.coverImage}
+                coverImage={blog.coverImage || '/images/default-cover.jpg'}
                 category={blog.category}
                 readTime={blog.readTime}
                 views={blog.views}
@@ -221,25 +220,27 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary-600 to-accent-600 py-16">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-        <div className="relative mx-auto max-w-7xl px-6 text-center lg:px-8">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl">
-            Ready to master AI?
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
-            Join thousands of learners and stay ahead with our expert guides and tutorials.
-          </p>
-          <div className="mt-8">
-            <Link
-              href="/guides"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-primary-600 shadow-md transition-all hover:shadow-lg hover:scale-105"
-            >
-              <Sparkles className="h-4 w-4" />
-              Start Learning Today
+      {/* Generate Now Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900">Generate Content Instantly</h2>
+          <p className="mt-4 text-gray-600">Pay $0.99 per generation and create high-quality content instantly.</p>
+          <div className="mt-6">
+            <Link href="/generate-now" className="btn-primary">
+              Generate Now
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative overflow-hidden bg-white py-12">
+        <div className="absolute inset-0 bg-grid-pattern opacity-10 z-0" />
+        <div className="relative mx-auto max-w-7xl px-6 text-center lg:px-8 z-10">
+          <h2 className="text-3xl font-extrabold text-accent-600 sm:text-4xl drop-shadow-md">
+            New users can generate one post for FREE.
+          </h2>
         </div>
       </section>
     </>

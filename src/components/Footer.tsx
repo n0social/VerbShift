@@ -46,28 +46,17 @@ export default function Footer() {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-accent-500">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                AI Guides
+            <Link href="/" className="flex items-center">
+              <span className="font-bold text-xl text-primary">
+                Verbshift
               </span>
             </Link>
-            <p className="text-sm text-gray-600 max-w-xs">
-              Your comprehensive resource for mastering AI tools, techniques, and best practices.
+            <p className="text-sm text-gray-600 max-w-xs font-semibold">
+              Your Content... Streamlined.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                <Github className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                <Mail className="h-5 w-5" />
-              </a>
-            </div>
+            <p className="text-xs text-muted max-w-xs">
+              Professional Prose, Programmatically Generated.
+            </p>
           </div>
 
           {/* Links */}
@@ -123,7 +112,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="mt-12 border-t border-gray-200 pt-8">
           {/* Newsletter Signup */}
-          <div className="mb-8 max-w-md mx-auto text-center">
+          <div className="mb-8 w-full flex flex-col items-center justify-center">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Subscribe to our Newsletter</h3>
             <p className="text-xs text-gray-600 mb-4">
               Get the latest AI guides, tips, and news delivered to your inbox.
@@ -134,7 +123,7 @@ export default function Footer() {
                 <span>Thanks for subscribing!</span>
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="flex gap-2">
+              <form onSubmit={handleSubscribe} className="flex gap-2 justify-center w-full max-w-md">
                 <input
                   type="email"
                   value={email}

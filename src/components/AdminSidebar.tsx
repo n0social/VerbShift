@@ -82,7 +82,7 @@ export default function AdminSidebar() {
               View Site
             </Link>
             <button
-              onClick={() => signOut({ callbackUrl: '/admin/login' })}
+              onClick={() => signOut({ callbackUrl: '/' })}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
             >
               <LogOut className="h-5 w-5" />
@@ -149,7 +149,7 @@ export default function AdminSidebar() {
                 View Site
               </Link>
               <button
-                onClick={() => signOut({ callbackUrl: '/admin/login' })}
+                onClick={() => signOut({ callbackUrl: '/' })}
                 className="flex-1 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-100 transition-colors"
               >
                 Sign Out

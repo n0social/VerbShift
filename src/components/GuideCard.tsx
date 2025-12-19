@@ -47,15 +47,17 @@ export default function GuideCard({
           featured ? 'md:w-1/2 aspect-video md:aspect-auto' : 'aspect-video'
         )}
       >
-        {coverImage ? (
+        {typeof coverImage === 'string' &&
+          coverImage.trim() !== '' &&
+          (coverImage.startsWith('http://') || coverImage.startsWith('https://')) ? (
           <img
             src={coverImage}
             alt={title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-6xl opacity-20">🤖</div>
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <span className="text-4xl font-bold text-gray-400 select-none">VS</span>
           </div>
         )}
         

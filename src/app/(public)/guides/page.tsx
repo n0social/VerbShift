@@ -46,7 +46,7 @@ export default async function GuidesPage({ searchParams }: GuidesPageProps) {
       {/* Header */}
       <div className="bg-white border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-          <h1 className="text-4xl font-bold text-gray-900">AI Guides</h1>
+          <h1 className="text-4xl font-bold text-gray-900">Guides</h1>
           <p className="mt-4 text-lg text-gray-600">
             Comprehensive tutorials to help you master AI tools and techniques
           </p>

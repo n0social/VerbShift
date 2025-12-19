@@ -27,11 +27,20 @@ interface BlogFormProps {
     categoryId: string
   }
   categories: Category[]
+  dashboardContext?: 'user' | 'admin'
 }
 
-export default function BlogForm({ blog, categories }: BlogFormProps) {
+export default function BlogForm({ blog, categories, dashboardContext }: BlogFormProps) {
   const router = useRouter()
   const isEditing = !!blog
+  // Use explicit dashboardContext prop if provided, fallback to path detection (for backward compatibility)
+  let isUserDashboard = false;
+  if (dashboardContext) {
+    isUserDashboard = dashboardContext === 'user';
+  } else if (typeof window !== 'undefined') {
+    isUserDashboard = window.location.pathname.includes('/user/dashboard');
+  }
+  const dashboardBase = isUserDashboard ? '/user/dashboard/blogs' : '/admin/blogs';
   
   const [formData, setFormData] = useState({
     title: blog?.title || '',
@@ -77,7 +86,7 @@ export default function BlogForm({ blog, categories }: BlogFormProps) {
         throw new Error(data.error || 'Failed to save blog post')
       }
 
-      router.push('/admin/blogs')
+      router.push(dashboardBase)
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -93,7 +102,7 @@ export default function BlogForm({ blog, categories }: BlogFormProps) {
     try {
       const res = await fetch(`/api/blogs/${blog?.id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to delete blog post')
-      router.push('/admin/blogs')
+      router.push(dashboardBase)
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -108,7 +117,7 @@ export default function BlogForm({ blog, categories }: BlogFormProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            href="/admin/blogs"
+            href={dashboardBase}
             className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />

@@ -1,20 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700;900&display=swap');
+
+:root {
+  /* Colors */
+  --color-primary: #f59e0b;      /* Amber Gold */
+  --color-secondary: #0f172a;    /* Midnight Navy */
+  --color-bg: #fafaf9;           /* Warm Stone */
+  --color-text: #1c1917;         /* Deep Charcoal */
+  --color-border: #e7e5e4;       /* Soft Gray */
+
+  /* Typography */
+  --font-main: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  line-height: 1.6;
+}
+
+/* Example button style for .btn-primary */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #000;
+  font-weight: 700;
+  border-radius: 8px;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
 @layer base {
   html {
     scroll-behavior: smooth;
   }
-  
   body {
     @apply antialiased;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .accent, .label {
+    font-family: 'JetBrains Mono', monospace;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-primary-500 to-accent-500 px-6 py-3 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center rounded bg-primary px-6 py-3 text-sm font-medium text-black shadow-card transition-all hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
   
   .btn-secondary {
@@ -22,7 +58,7 @@
   }
   
   .input {
-    @apply block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all;
+    @apply block w-full rounded-lg border border-border px-4 py-2.5 text-text placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary transition-all;
   }
   
   .label {
@@ -41,7 +77,7 @@
 
 .EasyMDEContainer .editor-toolbar button.active,
 .EasyMDEContainer .editor-toolbar button:hover {
-  @apply bg-primary-100;
+  @apply bg-primary text-black;
 }
 
 /* Custom scrollbar */

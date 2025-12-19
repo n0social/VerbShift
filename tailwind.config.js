@@ -7,37 +7,37 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        header: ['"Plus Jakarta Sans"', 'sans-serif'],
+        accent: ['"JetBrains Mono"', 'monospace'],
+      },
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
-        },
-        accent: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
-          950: '#4a044e',
-        },
+        primary: '#f59e0b', // Amber Gold
+        secondary: '#0f172a', // Midnight Navy
+        background: '#fafaf9', // Warm Stone
+        text: '#1c1917', // Deep Charcoal
+        border: '#e7e5e4', // Soft Gray
+        surface: '#ffffff',
+        muted: '#78716c',
+      },
+      fontFamily: {
+        main: ['Public Sans', 'sans-serif'],
+      },
+      borderRadius: {
+        DEFAULT: '8px',
+        md: '12px',
+      },
+      boxShadow: {
+        card: '0 10px 15px -3px rgba(15, 23, 42, 0.05)',
       },
       typography: {
         DEFAULT: {
           css: {
+            h1: { fontFamily: '"Plus Jakarta Sans", sans-serif' },
+            h2: { fontFamily: '"Plus Jakarta Sans", sans-serif' },
+            h3: { fontFamily: '"Plus Jakarta Sans", sans-serif' },
+            h4: { fontFamily: '"Plus Jakarta Sans", sans-serif' },
+            code: { fontFamily: '"JetBrains Mono", monospace' },
             maxWidth: 'none',
             color: '#334155',
             a: {

@@ -5,9 +5,9 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Guides - Your Gateway to Mastering AI',
-  description: 'Comprehensive guides and tutorials for AI tools, machine learning, and prompt engineering.',
-  keywords: ['AI', 'artificial intelligence', 'machine learning', 'guides', 'tutorials', 'ChatGPT', 'prompt engineering'],
+  title: 'Verbshift',
+  description: 'Your Content... Streamlined. Professional Prose, Programmatically Generated.',
+  keywords: ['Verbshift', 'content', 'AI', 'streamlined', 'editor', 'writing', 'automation'],
 }
 
 export default function RootLayout({

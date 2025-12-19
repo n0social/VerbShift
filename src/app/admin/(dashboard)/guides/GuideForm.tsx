@@ -27,11 +27,20 @@ interface GuideFormProps {
     categoryId: string
   }
   categories: Category[]
+  dashboardContext?: 'user' | 'admin'
 }
 
-export default function GuideForm({ guide, categories }: GuideFormProps) {
+export default function GuideForm({ guide, categories, dashboardContext }: GuideFormProps) {
   const router = useRouter()
   const isEditing = !!guide
+  // Use explicit dashboardContext prop if provided, fallback to path detection (for backward compatibility)
+  let isUserDashboard = false;
+  if (dashboardContext) {
+    isUserDashboard = dashboardContext === 'user';
+  } else if (typeof window !== 'undefined') {
+    isUserDashboard = window.location.pathname.includes('/user/dashboard');
+  }
+  const dashboardBase = isUserDashboard ? '/user/dashboard/guides' : '/admin/guides';
   
   const [formData, setFormData] = useState({
     title: guide?.title || '',
@@ -78,7 +87,7 @@ export default function GuideForm({ guide, categories }: GuideFormProps) {
         throw new Error(data.error || 'Failed to save guide')
       }
 
-      router.push('/admin/guides')
+      router.push(dashboardBase)
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -94,7 +103,7 @@ export default function GuideForm({ guide, categories }: GuideFormProps) {
     try {
       const res = await fetch(`/api/guides/${guide?.id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to delete guide')
-      router.push('/admin/guides')
+      router.push(dashboardBase)
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -109,7 +118,7 @@ export default function GuideForm({ guide, categories }: GuideFormProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            href="/admin/guides"
+            href={dashboardBase}
             className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />

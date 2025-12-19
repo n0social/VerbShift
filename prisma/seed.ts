@@ -1,24 +1,22 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 import * as bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   // Create admin user
-  const hashedPassword = await bcrypt.hash('Intellect101!', 12)
-  
   const admin = await prisma.user.upsert({
-    where: { email: 'donavansky@gmail.com' },
-    update: { password: hashedPassword },
+    where: { email: 'admin@aiguides.com' },
+    update: {},
     create: {
-      email: 'donavansky@gmail.com',
       name: 'Admin',
-      password: hashedPassword,
-      role: 'admin',
+      email: 'admin@aiguides.com',
+      password: await bcrypt.hash('admin123', 10),
+      role: 'ADMIN',
     },
-  })
+  });
 
-  console.log('Created admin user:', admin.email)
+  console.log('Admin user created:', admin.email);
 
   // Create categories
   const categories = await Promise.all([
@@ -75,6 +73,24 @@ async function main() {
   ])
 
   console.log('Created categories:', categories.map(c => c.name).join(', '))
+
+  // Added new general and blog-specific categories
+  const additionalCategories = [
+    { id: 'general-1', name: 'Technology', slug: 'technology', description: 'All about technology', color: '#ff5733' },
+    { id: 'general-2', name: 'Health', slug: 'health', description: 'Health and wellness topics', color: '#33ff57' },
+    { id: 'blog-1', name: 'AI Research', slug: 'ai-research', description: 'Latest in AI research', color: '#5733ff' },
+    { id: 'blog-2', name: 'Programming Tips', slug: 'programming-tips', description: 'Tips for developers', color: '#33aaff' },
+  ];
+
+  for (const category of additionalCategories) {
+    await prisma.category.upsert({
+      where: { id: category.id },
+      update: {},
+      create: category,
+    });
+  }
+
+  console.log('Additional categories seeded successfully!')
 
   // Create sample guides
   const guides = await Promise.all([

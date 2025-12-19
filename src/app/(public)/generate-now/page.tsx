@@ -1,0 +1,186 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { MarkdownEditor } from '@/components';
+import { slugify } from '@/lib/utils';
+import { Sparkles, Wand2 } from 'lucide-react';
+
+const GenerateNowPage = () => {
+  const [topic, setTopic] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState(null);
+  const [error, setError] = useState('');
+  const [isPaid, setIsPaid] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    slug: '',
+    excerpt: '',
+    content: '',
+  });
+  const [autoSlug, setAutoSlug] = useState(true);
+
+  useEffect(() => {
+    if (autoSlug && formData.title) {
+      setFormData((prev) => ({ ...prev, slug: slugify(formData.title) }));
+    }
+  }, [formData.title, autoSlug]);
+
+  const handlePayment = () => {
+    window.location.href = 'https://buy.stripe.com/eVq00c6yU1c2anXatz7ok01';
+    setIsPaid(true); // Simulate payment success for now
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    alert('Content generated successfully!');
+    setIsPaid(false); // Relock the form after submission
+  };
+
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    if (!isPaid) {
+      setError('Please complete the payment first.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setGeneratedContent(null);
+
+    try {
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to generate content');
+      }
+
+      const data = await res.json();
+      setGeneratedContent(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8 container mx-auto p-4">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-accent-500">
+            <Wand2 className="h-5 w-5 text-white" />
+          </div>
+          AI Content Generator
+        </h1>
+        <p className="mt-2 text-gray-600">
+          Generate content instantly by providing a topic below.
+        </p>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+          <h2 className="font-semibold text-gray-900 mb-6">Generate Content</h2>
+
+          <form onSubmit={handleGenerate} className="space-y-6">
+            <div>
+              <label htmlFor="topic" className="label">
+                Topic
+              </label>
+              <input
+                id="topic"
+                type="text"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="input"
+                placeholder="e.g., How to use AI for writing"
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading || !topic || !isPaid}
+              className="w-full btn-primary disabled:opacity-50"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Generating...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Generate Content
+                </span>
+              )}
+            </button>
+          </form>
+        </div>
+
+        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+          <h2 className="font-semibold text-gray-900 mb-6">Generated Content</h2>
+
+          {generatedContent ? (
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase">Title</label>
+                <p className="mt-1 font-semibold text-gray-900">{generatedContent.title}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase">Excerpt</label>
+                <p className="mt-1 text-gray-600">{generatedContent.excerpt}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase">Content</label>
+                <div className="mt-1 max-h-64 overflow-y-auto rounded-lg bg-gray-50 p-4">
+                  <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
+                    {generatedContent.content}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+              <Wand2 className="h-12 w-12 mb-4" />
+              <p>Generated content will appear here</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {!isPaid && (
+        <div className="mt-8">
+          <button
+            onClick={handlePayment}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Pay $0.99 to Unlock
+          </button>
+        </div>
+      )}
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-2">How to Use</h2>
+        <ol className="list-decimal pl-6">
+          <li>Click the "Pay $0.99 to Generate" button.</li>
+          <li>Complete the payment via Stripe.</li>
+          <li>After payment, the form will unlock.</li>
+          <li>Fill in the details and generate your blog post or article.</li>
+          <li>After submission, the form will lock again until another payment is made.</li>
+        </ol>
+      </div>
+    </div>
+  );
+};
+
+export default GenerateNowPage;

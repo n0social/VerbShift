@@ -61,13 +61,37 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, slug, excerpt, content, coverImage, published, featured, categoryId, readTime } = body
 
-    // Check if slug already exists
-    const existing = await prisma.blog.findUnique({ where: { slug } })
-    if (existing) {
+
+    // Content filtering for violence, sexual content, hate speech
+    const forbiddenPatterns = [
+      /violence|kill|murder|shoot|attack|abuse|assault|rape|terror/i,
+      /sex|sexual|porn|nude|explicit|erotic|fetish|incest|orgy|xxx/i,
+      /hate|racist|homophobic|transphobic|slur|bigot|nazi|genocide/i,
+    ];
+    const isForbidden = forbiddenPatterns.some((pattern) =>
+      pattern.test(title + ' ' + excerpt + ' ' + content)
+    );
+    if (isForbidden && published) {
       return NextResponse.json(
-        { error: 'A blog post with this slug already exists' },
+        { error: 'Content violates our guidelines and cannot be published.' },
         { status: 400 }
-      )
+      );
+    }
+
+    // Prevent duplicate published blogs by title or slug
+    const existing = await prisma.blog.findFirst({
+      where: {
+        OR: [
+          { slug },
+          { title: title, published: true },
+        ],
+      },
+    });
+    if (existing && published) {
+      return NextResponse.json(
+        { error: 'A published blog post with this title or slug already exists.' },
+        { status: 400 }
+      );
     }
 
     const blog = await prisma.blog.create({

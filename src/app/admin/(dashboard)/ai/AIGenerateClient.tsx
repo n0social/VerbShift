@@ -10,57 +10,74 @@ interface Category {
   slug: string
 }
 
+
 interface AIGenerateClientProps {
-  categories: Category[]
+  categories: Category[];
+  canGenerate?: boolean;
 }
 
-export default function AIGenerateClient({ categories }: AIGenerateClientProps) {
-  const router = useRouter()
-  const [contentType, setContentType] = useState<'guide' | 'blog'>('guide')
-  const [topic, setTopic] = useState('')
-  const [categoryId, setCategoryId] = useState(categories[0]?.id || '')
-  const [loading, setLoading] = useState(false)
+export default function AIGenerateClient({ categories, canGenerate }: AIGenerateClientProps) {
+
+
+  const router = useRouter();
+  const [contentType, setContentType] = useState<'guide' | 'blog'>('guide');
+  const [topic, setTopic] = useState('');
+  const [categoryId, setCategoryId] = useState(categories[0]?.id || '');
+  const [loading, setLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<{
-    title: string
-    excerpt: string
-    content: string
-  } | null>(null)
-  const [copied, setCopied] = useState(false)
-  const [error, setError] = useState('')
+    title: string;
+    excerpt: string;
+    content: string;
+  } | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
+  const [references, setReferences] = useState<string[]>([]);
 
   const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setGeneratedContent(null)
+    e.preventDefault();
+    if (!canGenerate) {
+      setError('You need an active subscription to generate content.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setGeneratedContent(null);
+    setReferences([]);
 
     try {
       const res = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, contentType }),
-      })
+      });
 
-      let data
+      let data;
       try {
-        data = await res.json()
+        data = await res.json();
       } catch (jsonErr) {
         // If response is not JSON, show the raw text (likely an error page)
-        const text = await res.text()
-        throw new Error(`Unexpected response from server: ${text.slice(0, 200)}`)
+        const text = await res.text();
+        throw new Error(`Unexpected response from server: ${text.slice(0, 200)}`);
       }
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to generate content')
+        throw new Error(data.error || 'Failed to generate content');
       }
 
-      setGeneratedContent(data)
+      setGeneratedContent(data);
+
+      // Fetch references for the topic
+      const refRes = await fetch(`/api/ai/references?topic=${encodeURIComponent(topic)}`);
+      if (refRes.ok) {
+        const refData = await refRes.json();
+        setReferences(refData.references || []);
+      }
     } catch (err: any) {
-      setError(err.message || 'An unknown error occurred. Please check your server logs.')
+      setError(err.message || 'An unknown error occurred. Please check your server logs.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreate = async () => {
     if (!generatedContent) return
@@ -89,7 +106,12 @@ export default function AIGenerateClient({ categories }: AIGenerateClientProps) 
       if (!res.ok) throw new Error('Failed to create content')
 
       const created = await res.json()
-      router.push(`/admin/${contentType === 'guide' ? 'guides' : 'blogs'}/${created.id}`)
+      // Redirect to the new user dashboard edit page for guides or blogs after draft creation
+      if (contentType === 'guide') {
+        router.push(`/user/dashboard/guides/${created.id}`);
+      } else {
+        router.push(`/user/dashboard/blogs/${created.id}`);
+      }
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -112,7 +134,7 @@ export default function AIGenerateClient({ categories }: AIGenerateClientProps) 
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-accent-500">
             <Wand2 className="h-5 w-5 text-white" />
           </div>
-          AI Content Generator
+          Content Generator
         </h1>
         <p className="mt-2 text-gray-600">
           Generate guides and blog posts using AI. Just provide a topic and let the magic happen!
@@ -200,13 +222,18 @@ export default function AIGenerateClient({ categories }: AIGenerateClientProps) 
 
             <button
               type="submit"
-              disabled={loading || !topic}
+              disabled={loading || !topic || !canGenerate}
               className="w-full btn-primary disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   Generating...
+                </span>
+              ) : !canGenerate ? (
+                <span className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Subscription Required
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
@@ -215,13 +242,12 @@ export default function AIGenerateClient({ categories }: AIGenerateClientProps) 
                 </span>
               )}
             </button>
+            <p className="mt-3 text-xs text-gray-500 text-center">
+              <span className="font-semibold">Note:</span> Pressing <span className="font-semibold">Generate</span> will use one generation credit, regardless of whether you save or publish the content.
+            </p>
           </form>
 
-          <div className="mt-6 rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-gray-600">
-              <strong>Note:</strong> AI generation requires an OpenAI API key. Without it, sample content will be generated based on your topic.
-            </p>
-          </div>
+          {/* Removed outdated OpenAI API key disclaimer */}
         </div>
 
         {/* Generated Content */}
@@ -267,6 +293,21 @@ export default function AIGenerateClient({ categories }: AIGenerateClientProps) 
                   </pre>
                 </div>
               </div>
+
+              {references.length > 0 && (
+                <div className="mt-6">
+                  <label className="text-xs font-medium text-gray-500 uppercase">References</label>
+                  <ul className="mt-2 list-disc list-inside text-sm text-blue-700">
+                    {references.map((ref, idx) => (
+                      <li key={idx}>
+                        <a href={ref} target="_blank" rel="noopener noreferrer">
+                          {ref}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <button
                 onClick={handleCreate}

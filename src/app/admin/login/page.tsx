@@ -24,6 +24,8 @@ export default function LoginPage() {
         redirect: false,
       })
 
+      console.log('SignIn Result:', result); // Debugging log to inspect the result of signIn
+
       if (result?.error) {
         setError(result.error)
       } else {

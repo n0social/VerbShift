@@ -1,144 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import stripe from '@/lib/stripe';
 
 function log(message: string, data?: any) {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] ${message}`, data || '');
 }
 
-function generateSampleContent(topic: string, contentType: string) {
-  const title = topic.charAt(0).toUpperCase() + topic.slice(1);
 
-  const guideContent = `# ${title}
+// Subscription tier config
+const SUBSCRIPTION_TIERS = {
+  FREE: { postLimit: 1, price: 0 },
+  BASIC: { postLimit: 10, price: 5.99 },
+  PREMIUM: { postLimit: 25, price: 9.99 },
+};
 
-Welcome to this comprehensive guide on ${topic.toLowerCase()}. This tutorial will walk you through everything you need to know.
+async function checkSubscriptionLimit(userId: string, contentType: string) {
+  const subscription = await prisma.subscription.findUnique({
+    where: { userId },
+  });
 
-## Introduction
+  // Default to free tier if no subscription
+  const tier = ((subscription?.tier || 'FREE').toUpperCase() as keyof typeof SUBSCRIPTION_TIERS);
+  const config = SUBSCRIPTION_TIERS[tier] || SUBSCRIPTION_TIERS.FREE;
 
-${topic} is an important concept in the AI space. Understanding it will help you leverage AI more effectively in your work.
+  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+  // Count both guides and blogs created by the user this month
+  const guideCount = await prisma.guide.count({
+    where: {
+      authorId: userId,
+      createdAt: {
+        gte: new Date(`${currentMonth}-01`),
+        lt: new Date(`${currentMonth}-31`),
+      },
+    },
+  });
+  const blogCount = await prisma.blog.count({
+    where: {
+      authorId: userId,
+      createdAt: {
+        gte: new Date(`${currentMonth}-01`),
+        lt: new Date(`${currentMonth}-31`),
+      },
+    },
+  });
+  const usage = guideCount + blogCount;
+  if (usage >= config.postLimit) {
+    throw new Error('Subscription limit reached.');
+  }
+}
 
-## What You'll Learn
+async function createOneTimePaymentSession(userId: string, contentType: string) {
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `One-Time ${contentType} Generation`,
+          },
+          unit_amount: 500, // $5.00
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`,
+  });
 
-- Core concepts and fundamentals
-- Best practices and techniques
-- Practical examples and use cases
-- Tips for getting started
-
-## Getting Started
-
-### Prerequisites
-
-Before diving in, make sure you have:
-
-1. Basic understanding of AI concepts
-2. Access to relevant tools and platforms
-3. A curious mindset ready to learn
-
-### Step 1: Understanding the Basics
-
-Let's start with the fundamental concepts. ${topic} involves several key principles that form the foundation of everything else.
-
-\`\`\`
-Key Concept: The main idea behind ${topic.toLowerCase()}
-\`\`\`
-
-### Step 2: Practical Application
-
-Now that you understand the basics, let's put this knowledge into practice.
-
-1. **Start simple** - Begin with basic examples
-2. **Iterate** - Improve based on results
-3. **Experiment** - Try different approaches
-
-### Step 3: Advanced Techniques
-
-Once you're comfortable with the basics, explore more advanced features:
-
-- Advanced configuration options
-- Optimization techniques
-- Integration patterns
-
-## Best Practices
-
-Here are some best practices to keep in mind:
-
-1. **Always start with clear goals** - Know what you want to achieve
-2. **Document your process** - Keep notes for future reference
-3. **Stay updated** - AI evolves quickly, keep learning
-
-## Common Mistakes to Avoid
-
-- Jumping into complex scenarios too quickly
-- Ignoring the fundamentals
-- Not testing your implementations
-
-## Conclusion
-
-You now have a solid understanding of ${topic.toLowerCase()}. Continue practicing and exploring to deepen your knowledge.
-
-## Next Steps
-
-- Explore related topics
-- Join community discussions
-- Build your own projects
-
-Happy learning! 🚀`;
-
-  const blogContent = `# ${title}
-
-The world of AI is constantly evolving, and ${topic.toLowerCase()} represents one of the most exciting developments we've seen recently.
-
-## Overview
-
-In this post, we'll explore ${topic.toLowerCase()} and discuss its implications for the future of AI.
-
-## The Current State
-
-${topic} has been gaining significant attention in the AI community. Here's why it matters:
-
-### Key Developments
-
-1. **Innovation** - New approaches are emerging
-2. **Accessibility** - Tools are becoming more user-friendly
-3. **Impact** - Real-world applications are growing
-
-## What This Means for You
-
-Whether you're a developer, researcher, or enthusiast, ${topic.toLowerCase()} offers exciting opportunities:
-
-- New tools and capabilities
-- Enhanced productivity
-- Creative possibilities
-
-## Looking Ahead
-
-The future of ${topic.toLowerCase()} looks promising. We expect to see:
-
-1. More sophisticated implementations
-2. Broader adoption across industries
-3. Integration with existing workflows
-
-## Our Take
-
-At AI Guides, we believe ${topic.toLowerCase()} will play a significant role in shaping the future of AI. Stay tuned for more updates and in-depth tutorials.
-
-## Resources
-
-- Check out our [guides](/guides) for hands-on tutorials
-- Follow the latest [news](/blog) in AI
-
----
-
-*What are your thoughts on ${topic.toLowerCase()}? Share your experiences and questions in the comments below!*`;
-
-  return {
-    title,
-    excerpt: contentType === 'guide'
-      ? `A comprehensive guide to ${topic.toLowerCase()}. Learn everything you need to know to get started.`
-      : `Exploring ${topic.toLowerCase()} and its impact on the AI landscape. Read our latest insights.`,
-    content: contentType === 'guide' ? guideContent : blogContent,
-  };
+  return session.url;
 }
 
 export async function POST(request: NextRequest) {
@@ -156,11 +90,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     log('Request body parsed', body);
 
-    const { topic, contentType } = body;
+    const { topic, contentType, oneTimePayment } = body;
 
     if (!topic || !contentType) {
       log('Validation error: Missing topic or contentType');
       return NextResponse.json({ error: 'Topic and content type are required' }, { status: 400 });
+    }
+
+    if (oneTimePayment) {
+      try {
+        const paymentUrl = await createOneTimePaymentSession(session.user.id, contentType);
+        return NextResponse.json({ paymentUrl });
+      } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 400 });
+      }
+    }
+
+    // Allow admins to bypass subscription check
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user || user.role !== 'admin') {
+      await checkSubscriptionLimit(session.user.id, contentType);
     }
 
     const openaiApiKey = process.env.OPENAI_API_KEY;
@@ -182,8 +131,8 @@ export async function POST(request: NextRequest) {
               {
                 role: 'system',
                 content: contentType === 'guide'
-                  ? `You are an expert technical writer for a modern AI education website. Write comprehensive, in-depth, and well-structured AI guides in markdown format. Use clear section headings (H2, H3), bullet points, numbered steps, and code blocks where appropriate.`
-                  : `You are an AI industry expert writing engaging blog posts. Write in markdown format with insights, analysis, and forward-looking perspectives.`,
+                  ? `You are an expert technical writer for a modern AI education website. Write comprehensive, in-depth, and well-structured AI guides in markdown format. Use clear section headings (H2, H3), bullet points, numbered steps, and code blocks where appropriate. Ensure that section headings are varied and contextually relevant to the content.`
+                  : `You are an AI industry expert writing engaging blog posts. Write in markdown format with insights, analysis, and forward-looking perspectives. Ensure that section headings are varied and contextually relevant to the content.`,
               },
               {
                 role: 'user',
@@ -203,7 +152,7 @@ export async function POST(request: NextRequest) {
           const data = await response.json();
           log('OpenAI API response parsed', data);
 
-          const generatedContent = data.choices[0].message.content;
+          let generatedContent = data.choices[0].message.content;
 
           const lines = generatedContent.split('\n');
           const titleLine = lines.find((line: string) => line.startsWith('# '));
@@ -237,17 +186,83 @@ export async function POST(request: NextRequest) {
             excerpt = excerptData.choices[0].message.content.trim();
           }
 
-          log('Content generation successful', { title, excerpt });
-          return NextResponse.json({ title, excerpt, content: generatedContent });
+          // New logic to search for references
+          const referencesResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${openaiApiKey}`,
+            },
+            body: JSON.stringify({
+              model: 'gpt-4',
+              messages: [
+                {
+                  role: 'user',
+                  content: `Provide a list of credible references and sources for the topic: ${topic}. Include URLs and brief descriptions for each source.`,
+                },
+              ],
+              max_tokens: 500,
+              temperature: 0.5,
+            }),
+          });
+
+          log('References generation response received', { status: referencesResponse.status });
+
+          let references = [];
+          if (referencesResponse.ok) {
+            const referencesData = await referencesResponse.json();
+            log('References generation response parsed', referencesData);
+            references = referencesData.choices[0].message.content.split('\n').filter(Boolean);
+          }
+
+          // If a headline is provided, perform a search for references
+          if (contentType === 'blog' && topic) {
+            const searchResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${openaiApiKey}`,
+              },
+              body: JSON.stringify({
+                model: 'gpt-4',
+                messages: [
+                  {
+                    role: 'user',
+                    content: `Search online for credible references related to the headline: ${topic}. Provide a list of URLs and brief descriptions for each source.`,
+                  },
+                ],
+                max_tokens: 500,
+                temperature: 0.5,
+              }),
+            });
+
+            log('Headline-based reference search response received', { status: searchResponse.status });
+
+            if (searchResponse.ok) {
+              const searchData = await searchResponse.json();
+              log('Headline-based reference search response parsed', searchData);
+              references = searchData.choices[0].message.content.split('\n').filter(Boolean);
+            }
+          }
+
+          // Append references to the bottom of the blog post
+          if (contentType === 'blog' && references.length > 0) {
+            generatedContent += '\n\n## References\n';
+            references.forEach((ref: string) => {
+              generatedContent += `- ${ref}\n`;
+            });
+          }
+
+          log('Content generation successful', { title, excerpt, references });
+          return NextResponse.json({ title, excerpt, content: generatedContent, references });
         }
       } catch (apiError) {
         log('OpenAI API error', apiError);
       }
     }
 
-    log('Falling back to sample content generation');
-    const sampleContent = generateSampleContent(topic, contentType);
-    return NextResponse.json(sampleContent);
+    log('OpenAI failed or not configured, returning error');
+    return NextResponse.json({ error: 'AI content generation failed. Please try again later or contact support.' }, { status: 500 });
   } catch (error) {
     log('Error generating content', error);
     return NextResponse.json({ error: 'Failed to generate content' }, { status: 500 });
