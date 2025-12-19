@@ -9,7 +9,6 @@ function log(message: string, data?: any) {
   console.log(`[${timestamp}] ${message}`, data || '');
 }
 
-
 // Subscription tier config
 const SUBSCRIPTION_TIERS = {
   FREE: { postLimit: 1, price: 0 },
