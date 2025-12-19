@@ -64,7 +64,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {searchParams.q ? (
           <>
             <p className="mb-8 text-gray-600">
-              {totalResults} result{totalResults !== 1 ? 's' : ''} for "{searchParams.q}"
+              {totalResults} result{totalResults !== 1 ? 's' : ''} for &quot;{searchParams.q}&quot;
             </p>
 
             {totalResults > 0 ? (
