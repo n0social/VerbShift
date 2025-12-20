@@ -1,3 +1,4 @@
+
 import Link from 'next/link'
 import { ArrowRight, Sparkles, BookOpen, FileText, Zap, Users, TrendingUp } from 'lucide-react'
 import TypedMottoLiteral from '@/components/TypedMottoLiteral'
@@ -159,7 +160,7 @@ export default async function HomePage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {guides.map((guide: { id: string; title: string; slug: string; excerpt: string; coverImage: string | null; category: { name: string; slug: string; color: string }; readTime: number; views: number; createdAt: string }, index: number) => (
               <GuideCard
                 key={guide.id}
@@ -201,7 +202,7 @@ export default async function HomePage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog: { id: string; title: string; slug: string; excerpt: string; coverImage: string | null; category: { name: string; slug: string; color: string }; readTime: number; views: number; createdAt: string }) => (
               <GuideCard
                 key={blog.id}
