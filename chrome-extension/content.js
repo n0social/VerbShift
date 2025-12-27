@@ -23,7 +23,7 @@
     if (text.length > 0 && text !== lastSelection) {
       lastSelection = text;
       popup = document.createElement('div');
-      popup.textContent = 'Guide me';
+      popup.textContent = 'Create a Guide';
       popup.style.position = 'absolute';
       popup.style.top = `${e.pageY + 10}px`;
       popup.style.left = `${e.pageX + 10}px`;
