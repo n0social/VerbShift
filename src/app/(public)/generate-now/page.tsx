@@ -83,7 +83,7 @@ const GenerateNowPage: React.FC = () => {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-accent-500">
             <Wand2 className="h-5 w-5 text-white" />
           </div>
-          Astrapto
+          Generate
         </h1>
         <p className="mt-2 text-gray-600">
           Instantly generate step-by-step How-to guides and content with AI.

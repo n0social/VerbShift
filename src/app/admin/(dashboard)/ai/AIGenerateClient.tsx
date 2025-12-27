@@ -25,6 +25,22 @@ const BLOG_PERSONALITIES = [
 ];
 
 export default function AIGenerateClient({ categories, canGenerate }: AIGenerateClientProps) {
+  const [botRunning, setBotRunning] = useState(false);
+  const [botStatus, setBotStatus] = useState('');
+
+  const handleRunBot = async () => {
+    setBotRunning(true);
+    setBotStatus('Running...');
+    try {
+      const res = await fetch('/api/admin/run-bot', { method: 'POST' });
+      const data = await res.json();
+      setBotStatus(data.message || 'Bot finished.');
+    } catch (err) {
+      setBotStatus('Error running bot.');
+    } finally {
+      setBotRunning(false);
+    }
+  };
 
   const router = useRouter();
   // Read query params for topic and guideType
@@ -151,20 +167,41 @@ export default function AIGenerateClient({ categories, canGenerate }: AIGenerate
 
   // Use different categories for blog vs guide
   const blogCategories = BLOG_CATEGORIES;
-  const currentCategories = contentType === 'blog' ? blogCategories : [{ id: 'how-to', name: 'How-to', slug: 'how-to', description: '', color: '#0ea5e9', _count: { guides: 0, blogs: 0 } }];
+  const guideCategories = [
+    { id: 'how-to', name: 'How-to', slug: 'how-to', description: 'Step-by-step guides and tutorials.', color: '#0ea5e9', _count: { guides: 0, blogs: 0 } },
+    { id: 'getting-started', name: 'Getting Started', slug: 'getting-started', description: 'Beginner guides and onboarding.', color: '#fbbf24', _count: { guides: 0, blogs: 0 } },
+    { id: 'troubleshooting', name: 'Troubleshooting', slug: 'troubleshooting', description: 'Problem solving, fixes, and solutions.', color: '#f59e42', _count: { guides: 0, blogs: 0 } },
+    { id: 'it', name: 'IT', slug: 'it', description: 'Information technology, support, and systems.', color: '#6366f1', _count: { guides: 0, blogs: 0 } },
+    { id: 'machine-learning', name: 'Machine Learning', slug: 'machine-learning', description: 'ML guides and tutorials.', color: '#22d3ee', _count: { guides: 0, blogs: 0 } },
+    { id: 'prompt-engineering', name: 'Prompt Engineering', slug: 'prompt-engineering', description: 'Prompt engineering tips and guides.', color: '#a3e635', _count: { guides: 0, blogs: 0 } },
+  ];
+  const currentCategories = contentType === 'blog' ? blogCategories : guideCategories;
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
+                <div className="mb-4">
+                  <button
+                    type="button"
+                    className={`btn-primary px-4 py-2 rounded ${botRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={handleRunBot}
+                    disabled={botRunning}
+                  >
+                    {botRunning ? 'Running Bot...' : 'Run Bot'}
+                  </button>
+                  {botStatus && (
+                    <span className="ml-4 text-sm text-gray-500">{botStatus}</span>
+                  )}
+                </div>
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-accent-500">
             <Wand2 className="h-5 w-5 text-white" />
           </div>
-          Astrapto
+          Generate
         </h1>
         <p className="mt-2 text-gray-600">
-          Instantly generate step-by-step How-to guides and blog posts with AI.
+          Create a guide, give your team a quick how-to. Or, send a heartwarming email about your new opportunity, wishing your friends the best. You got options.
         </p>
       </div>
 
@@ -222,31 +259,24 @@ export default function AIGenerateClient({ categories, canGenerate }: AIGenerate
             </div>
 
             {/* Category (Guides: always How-to) */}
-            {contentType === 'blog' ? (
-              <div>
-                <label htmlFor="category" className="label">
-                  Category
-                </label>
-                <select
-                  id="category"
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="input"
-                  required
-                >
-                  {currentCategories.map((cat) => (
-                    <option key={cat.slug} value={cat.slug}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : (
-              <div>
-                <label className="label">Guide Type</label>
-                <input className="input" value="How-to" disabled />
-              </div>
-            )}
+            <div>
+              <label htmlFor="category" className="label">
+                Category
+              </label>
+              <select
+                id="category"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="input"
+                required
+              >
+                {currentCategories.map((cat) => (
+                  <option key={cat.slug} value={cat.slug}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Blog Tone/Personality Selector */}
             {contentType === 'blog' && (

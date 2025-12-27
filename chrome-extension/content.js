@@ -27,16 +27,16 @@
       popup.style.position = 'absolute';
       popup.style.top = `${e.pageY + 10}px`;
       popup.style.left = `${e.pageX + 10}px`;
-      popup.style.background = '#60a5fa'; // lighter blue
-      popup.style.color = '#fff';
+      popup.style.background = '#fef9c3'; // light yellow
+      popup.style.color = '#333';
       popup.style.padding = '14px 28px'; // larger
       popup.style.borderRadius = '14px';
-      popup.style.boxShadow = '0 4px 16px rgba(96,165,250,0.18)';
+      popup.style.boxShadow = '0 4px 16px rgba(250,224,83,0.18)';
       popup.style.cursor = 'pointer';
       popup.style.zIndex = 999999;
       popup.style.fontWeight = 'bold';
       popup.style.userSelect = 'none';
-      popup.style.fontFamily = 'Comic Sans MS, Comic Sans, Chalkboard, fantasy, sans-serif'; // Sims-like font
+      popup.style.fontFamily = 'Segoe UI, Arial, Helvetica, sans-serif'; // professional modern font
       popup.style.fontSize = '1.25em';
       popup.addEventListener('mousedown', function(ev) {
         ev.stopPropagation();
@@ -56,18 +56,18 @@
           opt.style.position = 'absolute';
           opt.style.top = `${e.pageY + 10 + idx * 56}px`;
           opt.style.left = `${e.pageX + 10}px`;
-          opt.style.background = '#e0e7ff'; // lighter blue
-          opt.style.color = '#2563eb';
-          opt.style.padding = '14px 28px'; // larger
-          opt.style.borderRadius = '14px';
-          opt.style.boxShadow = '0 4px 16px rgba(96,165,250,0.12)';
-          opt.style.cursor = 'pointer';
-          opt.style.zIndex = 999999;
-          opt.style.fontWeight = 'bold';
-          opt.style.userSelect = 'none';
-          opt.style.border = '2px solid #60a5fa';
-          opt.style.fontFamily = 'Comic Sans MS, Comic Sans, Chalkboard, fantasy, sans-serif'; // Sims-like font
-          opt.style.fontSize = '1.15em';
+            opt.style.background = '#fef9c3'; // light yellow
+            opt.style.color = '#333';
+            opt.style.padding = '14px 28px'; // larger
+            opt.style.borderRadius = '14px';
+            opt.style.boxShadow = '0 4px 16px rgba(250,224,83,0.12)';
+            opt.style.cursor = 'pointer';
+            opt.style.zIndex = 999999;
+            opt.style.fontWeight = 'bold';
+            opt.style.userSelect = 'none';
+            opt.style.border = '2px solid #fef9c3';
+            opt.style.fontFamily = 'Segoe UI, Arial, Helvetica, sans-serif'; // professional modern font
+            opt.style.fontSize = '1.15em';
           opt.addEventListener('mousedown', function(ev2) {
             ev2.stopPropagation();
             ev2.preventDefault();
@@ -90,7 +90,7 @@
                     errorPopup.style.boxShadow = '0 2px 8px rgba(0,0,0,0.18)';
                     errorPopup.style.zIndex = 999999;
                     errorPopup.style.fontWeight = 'bold';
-                    errorPopup.style.fontFamily = 'Comic Sans MS, Comic Sans, Chalkboard, fantasy, sans-serif';
+                    errorPopup.style.fontFamily = 'Segoe UI, Arial, Helvetica, sans-serif'; // professional modern font
                     errorPopup.style.fontSize = '1.1em';
                     document.body.appendChild(errorPopup);
                     setTimeout(() => errorPopup.remove(), 3500);

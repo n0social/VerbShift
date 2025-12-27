@@ -28,17 +28,25 @@ export default function Footer() {
   const [subscribed, setSubscribed] = useState(false)
   const [loading, setLoading] = useState(false)
 
+
   const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
-    
-    setLoading(true)
-    // Simulate API call - you can connect this to a real newsletter service
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setSubscribed(true)
-    setLoading(false)
-    setEmail('')
-  }
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) throw new Error('Failed to subscribe');
+      setSubscribed(true);
+      setEmail('');
+    } catch (err) {
+      alert('There was a problem subscribing. Please try again.');
+    }
+    setLoading(false);
+  } 
 
   return (
     <footer className="bg-gray-50 border-t border-gray-100">
@@ -113,9 +121,9 @@ export default function Footer() {
         <div className="mt-12 border-t border-gray-200 pt-8">
           {/* Newsletter Signup */}
           <div className="mb-8 w-full flex flex-col items-center justify-center">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Subscribe to our Newsletter</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">Subscribe and become a Member!</h3>
             <p className="text-xs text-gray-600 mb-4">
-              Get the latest AI guides, tips, and news delivered to your inbox.
+              Get on the list for updates.
             </p>
             {subscribed ? (
               <div className="flex items-center justify-center gap-2 text-green-600 text-sm">
@@ -150,7 +158,7 @@ export default function Footer() {
             )}
           </div>
           <p className="text-center text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} AI Guides. All rights reserved.
+            &copy; {new Date().getFullYear()} Verbshift. All rights reserved.
           </p>
         </div>
       </div>

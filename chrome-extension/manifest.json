@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "Verbshift Bridge",
   "version": "1.0.0",
-  "description": "Send highlighted text to Verbshift to generate professional AI guides.",
+  "name": "Verbshift",
+  "description": "Send highlighted text to verbshift.",
   "permissions": ["contextMenus", "tabs", "scripting", "activeTab"],
   "background": {
     "service_worker": "background.js"

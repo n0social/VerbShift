@@ -12,7 +12,7 @@ export default function PublicLayout({
     <div className="min-h-screen flex flex-col">
       <NavbarWrapper />
       <main className="flex-1 pt-20">{children}</main>
-      <Footer />
+      {/* <Footer /> removed to prevent double footer */}
     </div>
   )
 }

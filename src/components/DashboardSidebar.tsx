@@ -22,7 +22,7 @@ const navigation = [
   { name: 'Dashboard', href: '/user/dashboard', icon: LayoutDashboard },
   { name: 'Guides', href: '/user/dashboard/guides', icon: BookOpen },
   { name: 'Blog Posts', href: '/user/dashboard/blogs', icon: FileText },
-  { name: 'Astrapto', href: '/user/dashboard/generate', icon: Wand2 },
+  { name: 'Generate', href: '/user/dashboard/generate', icon: Wand2 },
 ];
 
 const settingsNav = { name: 'Settings', href: '/user/dashboard/settings', icon: Settings };
