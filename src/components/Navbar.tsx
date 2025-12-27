@@ -29,6 +29,18 @@ export default function Navbar() {
 	const pathname = usePathname();
 	const navigation = getNavigation(session);
 
+	// Prevent background scroll when mobile menu is open
+	React.useEffect(() => {
+		if (mobileMenuOpen) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+		return () => {
+			document.body.style.overflow = '';
+		};
+	}, [mobileMenuOpen]);
+
 	return (
 		<header className="fixed inset-x-0 top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
 			<div className="mx-auto flex max-w-7xl items-center py-4 pr-4 lg:pr-8 pl-0 lg:pl-0">
@@ -64,8 +76,24 @@ export default function Navbar() {
 
 			{/* Mobile menu */}
 			<div className={cn('lg:hidden', mobileMenuOpen ? 'block' : 'hidden')}>
-				<div className="fixed inset-0 z-50" onClick={() => setMobileMenuOpen(false)} />
-				<div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+				{/* Overlay */}
+				{mobileMenuOpen && (
+					<div
+						className="fixed inset-0 z-40 bg-black bg-opacity-30 transition-opacity duration-300"
+						aria-hidden="true"
+						onClick={() => setMobileMenuOpen(false)}
+					/>
+				)}
+				{/* Slide-in menu */}
+				<div
+					className={cn(
+						"fixed inset-y-0 right-0 z-50 w-full sm:max-w-sm overflow-y-auto bg-white px-6 py-6 ring-1 ring-gray-900/10 transition-transform duration-300",
+						mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+					)}
+					role="dialog"
+					aria-modal="true"
+					tabIndex={-1}
+				>
 					<div className="flex items-center justify-between">
 						<Link href="/" className="-m-1.5 p-1.5 flex items-center">
 							<span className="font-bold text-xl text-primary">Verbshift</span>
@@ -74,6 +102,7 @@ export default function Navbar() {
 							type="button"
 							className="-m-2.5 rounded-md p-2.5 text-gray-700"
 							onClick={() => setMobileMenuOpen(false)}
+							aria-label="Close menu"
 						>
 							<X className="h-6 w-6" />
 						</button>

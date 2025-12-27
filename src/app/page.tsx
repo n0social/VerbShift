@@ -36,11 +36,15 @@ async function getFeaturedContent() {
     }),
   ])
 
-  return { guides, blogs, categories }
+  // Calculate total reads (sum of all guide and blog views)
+  const guideViews = await prisma.guide.aggregate({ _sum: { views: true } });
+  const blogViews = await prisma.blog.aggregate({ _sum: { views: true } });
+  const totalReads = (guideViews._sum.views || 0) + (blogViews._sum.views || 0);
+  return { guides, blogs, categories, totalReads }
 }
 
 export default async function HomePage() {
-  const { guides, blogs, categories } = await getFeaturedContent()
+  const { guides, blogs, categories, totalReads } = await getFeaturedContent()
   const baseUrl = 'https://yourdomain.com'; // TODO: Replace with your real domain
   const structuredData = {
     "@context": "https://schema.org",
@@ -112,7 +116,7 @@ export default async function HomePage() {
               <div className="flex justify-center">
                 <Users className="h-8 w-8 text-primary-500" />
               </div>
-              <p className="mt-2 text-3xl font-bold text-gray-900">10K+</p>
+              <p className="mt-2 text-3xl font-bold text-gray-900">{totalReads.toLocaleString()}</p>
               <p className="text-sm text-gray-600">Happy Readers</p>
             </div>
             <div className="text-center">
