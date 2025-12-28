@@ -64,6 +64,19 @@ async function runBotGuideGenerator() {
   if (!title || title.length < 5 || /load data|untitled|no content/i.test(title)) {
     return { success: false, message: 'Guide not saved: invalid or meaningless title.' };
   }
+  // Duplicate check: look for similar titles
+  const similarGuides = await prisma.guide.findMany({
+    where: {
+      title: {
+        contains: title.split(' ').slice(0, 4).join(' '),
+        mode: 'insensitive',
+      },
+    },
+    take: 1,
+  });
+  if (similarGuides.length > 0) {
+    return { success: false, message: `Guide not saved: similar guide already exists ('${similarGuides[0].title}').` };
+  }
   // Validate content
   if (!generatedContent || generatedContent.length < 100 || /load data|no content|untitled/i.test(generatedContent)) {
     return { success: false, message: 'Guide not saved: content not meaningful.' };
