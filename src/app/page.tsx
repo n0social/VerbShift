@@ -242,7 +242,7 @@ export default async function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900">Generate Content Instantly</h2>
-          <p className="mt-4 text-gray-600">Pay $0.99 per generation and create high-quality content instantly.</p>
+          <p className="mt-4 text-gray-600">Create high-quality content instantly. No payment required—it's 100% free!</p>
           <div className="mt-6">
             <Link href="/generate-now" className="btn-primary">
               Generate Now
@@ -252,15 +252,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative overflow-hidden bg-white py-12">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10 z-0" />
-        <div className="relative mx-auto max-w-7xl px-6 text-center lg:px-8 z-10">
-          <h2 className="text-3xl font-extrabold text-accent-600 sm:text-4xl drop-shadow-md">
-            New users can generate one post for FREE.
-          </h2>
-        </div>
-      </section>
+      {/* CTA Section removed to eliminate gap above footer */}
     </>
   )
 }

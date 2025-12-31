@@ -47,7 +47,7 @@ export default function PrivacyPage() {
       <p className="mb-4 text-gray-700">We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the new policy on this page.</p>
 
       <h2 className="text-xl font-semibold mt-8 mb-2">8. Contact Us</h2>
-      <p className="mb-4 text-gray-700">If you have any questions or concerns about this Privacy Policy or your data, please contact us at <a href="mailto:harborworksdigital@gmail.com" className="text-primary-600 underline">harborworksdigital@gmail.com</a>.</p>
+      <p className="mb-4 text-gray-700">If you have any questions or concerns about this Privacy Policy or your data, please contact us at <a href="mailto:verbshift@protonmail.com" className="text-primary-600 underline">verbshift@protonmail.com</a>.</p>
     </div>
   );
 }

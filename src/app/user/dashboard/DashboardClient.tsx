@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { BookOpen, FileText, FolderOpen, Eye } from 'lucide-react';
-import SubscriptionModalClient from './SubscriptionModalClient';
 import EditUserModal from '@/components/EditUserModal';
 
 export default function DashboardClient({ user, stats, users }: any) {
@@ -140,7 +139,7 @@ export default function DashboardClient({ user, stats, users }: any) {
           </div>
         </div>
       )}
-      <SubscriptionModalClient hasSubscription={!!user.subscription} />
+      {/* SubscriptionModalClient removed */}
       <EditUserModal
         user={editUser}
         open={!!editUser}

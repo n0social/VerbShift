@@ -14,7 +14,6 @@ export default async function DashboardPage() {
   }
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: { subscription: true },
   });
   if (!user) {
     return <p>User not found.</p>;
@@ -36,6 +35,8 @@ export default async function DashboardPage() {
     views: userGuideViews._sum.views || 0,
     blogViews: userBlogViews._sum.views || 0,
   };
+
+
 
   return (
     <DashboardClient

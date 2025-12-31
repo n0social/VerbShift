@@ -14,7 +14,7 @@ function getNavigation(session: Session | null | undefined) {
 		{ name: 'Home', href: '/' },
 		{ name: 'Guides', href: '/guides' },
 		{ name: 'Blog', href: '/blog' },
-		{ name: 'Generate Now', href: '/generate-now' },
+		{ name: 'Generate (Free)', href: '/generate-now' },
 		session && session.user
 			? { name: 'Dashboard', href: '/user/dashboard' }
 			: { name: 'Login', href: '/login' },

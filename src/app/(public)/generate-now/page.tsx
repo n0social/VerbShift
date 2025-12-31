@@ -13,11 +13,12 @@ interface GeneratedContent {
 }
 
 const GenerateNowPage: React.FC = () => {
+  const [email, setEmail] = useState<string>('');
   const [topic, setTopic] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [error, setError] = useState<string>('');
-  const [isPaid, setIsPaid] = useState<boolean>(false);
+  // const [isPaid, setIsPaid] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -32,25 +33,21 @@ const GenerateNowPage: React.FC = () => {
     }
   }, [formData.title, autoSlug]);
 
-  const handlePayment = () => {
-    window.location.href = 'https://buy.stripe.com/eVq00c6yU1c2anXatz7ok01';
-    setIsPaid(true); // Simulate payment success for now
-  };
+  // const handlePayment = () => {
+  //   window.location.href = 'https://buy.stripe.com/eVq00c6yU1c2anXatz7ok01';
+  //   setIsPaid(true); // Simulate payment success for now
+  // };
 
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    alert('Content generated successfully!');
-    setIsPaid(false); // Relock the form after submission
-  };
+
 
 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isPaid) {
-      setError('Please complete the payment first.');
-      return;
-    }
+    // if (!isPaid) {
+    //   setError('Please complete the payment first.');
+    //   return;
+    // }
     setLoading(true);
     setError('');
     setGeneratedContent(null);
@@ -58,7 +55,7 @@ const GenerateNowPage: React.FC = () => {
       const res = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, contentType: 'guide', categoryId: 'how-to' }),
+        body: JSON.stringify({ topic, contentType: 'guide', categoryId: 'how-to', email: email || undefined }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -106,7 +103,19 @@ const GenerateNowPage: React.FC = () => {
                 required
               />
             </div>
-
+            <div>
+              <label htmlFor="email" className="label">
+                Email (optional)
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input"
+                placeholder="Enter your email to receive the result"
+              />
+            </div>
             {error && (
               <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
                 {error}
@@ -115,7 +124,7 @@ const GenerateNowPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={loading || !topic || !isPaid}
+              disabled={loading || !topic}
               className="w-full btn-primary disabled:opacity-50"
             >
               {loading ? (
@@ -164,6 +173,7 @@ const GenerateNowPage: React.FC = () => {
         </div>
       </div>
 
+      {/*
       {!isPaid && (
         <div className="mt-8">
           <button
@@ -174,7 +184,9 @@ const GenerateNowPage: React.FC = () => {
           </button>
         </div>
       )}
+      */}
 
+      {/*
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-2">How to Use</h2>
         <ol className="list-decimal pl-6">
@@ -185,6 +197,7 @@ const GenerateNowPage: React.FC = () => {
           <li>After submission, the form will lock again until another payment is made.</li>
         </ol>
       </div>
+      */}
     </div>
   );
 };

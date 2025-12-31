@@ -6,11 +6,18 @@ A modern, elegant AI Guides website with a full admin dashboard for content mana
 
 - 🎨 **Clean, Modern UI** - Beautiful design with Tailwind CSS
 - 📝 **Guides & Blogs** - Separate sections for AI guides and blog posts
+
+## Features
+
+- 🎨 **Clean, Modern UI** - Beautiful design with Tailwind CSS
+- 📝 **Guides & Blogs** - Separate sections for AI guides and blog posts
 - 🔐 **Admin Dashboard** - Full CRUD operations for content management
 - 📱 **Responsive Design** - Works perfectly on all devices
 - 🔍 **Search & Filter** - Find content easily by category or keyword
 - ✨ **Markdown Support** - Rich content editing with markdown
 - 🤖 **AI-Ready API** - RESTful API for AI integration
+
+> **Note:** Payment, subscription, and billing features have been removed from this project. All content is now accessible without payment or subscription.
 
 ## Tech Stack
 

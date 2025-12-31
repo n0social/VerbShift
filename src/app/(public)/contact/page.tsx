@@ -38,7 +38,7 @@ export default function ContactPage() {
   return (
     <div className="max-w-2xl mx-auto py-16 px-4">
       <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
-      <p className="mb-4 text-gray-700">Have a question, suggestion, or want to partner with us? Fill out the form below or email us at <a href="mailto:harborworksdigital@gmail.com" className="text-primary-600 underline">harborworksdigital@gmail.com</a>.</p>
+      <p className="mb-4 text-gray-700">Have a question, suggestion, or want to partner with us? Fill out the form below or email us at <a href="mailto:verbshift@protonmail.com" className="text-primary-600 underline">verbshift@protonmail.com</a>.</p>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <input
           type="text"

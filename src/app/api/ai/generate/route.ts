@@ -31,6 +31,7 @@ import { PERSONALITY_MATRIX } from './_lib/personalityMatrix';
 // import { limitEmojis } from './_lib/limitEmojis';
 import { buildBlogPrompt } from './_lib/blogPrompt';
 import { cleanBlogContent } from './_lib/cleanBlogContent';
+import { sendMail } from '@/lib/mailer';
 
 function log(message: string, data?: any) {
   const timestamp = new Date().toISOString();
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const body = await request.json();
-    const { topic, contentType, oneTimePayment, personality = 'friendly' } = body;
+    const { topic, contentType, oneTimePayment, personality = 'friendly', email } = body;
     if (!topic || !contentType) {
       return NextResponse.json({ error: 'Topic and content type are required' }, { status: 400 });
     }

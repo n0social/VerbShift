@@ -17,15 +17,6 @@ export default async function UserAIGeneratePage() {
   if (!session || !session.user) {
     redirect('/');
   }
-  const isAdmin = session.user.role?.toLowerCase() === 'admin';
-  let hasSubscription = false;
-  if (!isAdmin) {
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: { subscription: true },
-    });
-    hasSubscription = !!user?.subscription && user.subscription.tier !== '';
-  }
   const categories = getHowToCategory();
-  return <AIGenerateClient categories={categories} canGenerate={isAdmin || hasSubscription} />;
+  return <AIGenerateClient categories={categories} canGenerate={true} />;
 }

@@ -1,0 +1,37 @@
+Task: Build a Chrome Extension Bridge for "Verbshift"
+
+Project Overview
+
+Verbshift is a Next.js web application (currently at https://www.google.com/search?q=verbshift.com) that generates professional guides using AI. The goal is to create a Chrome Extension that allows users to send highlighted text from any website directly into the Verbshift generation engine.
+
+Core Technical Requirements
+
+Manifest V3: Use the latest Chrome Extension standards.
+
+Context Menu Integration: Create a right-click menu option titled "Generate Verbshift Guide" that only appears when text is selected.
+
+Deep Linking: When the menu item is clicked, capture the selected text and open a new tab to https://verbshift.com/generate?content=[ENCODED_TEXT].
+
+Action Icon: Clicking the extension icon in the toolbar should simply open https://verbshift.com in a new tab.
+
+File Structure to Generate
+
+manifest.json: Include permissions for contextMenus and tabs.
+
+background.js: A service worker to handle the onInstalled setup for the context menu and the onClicked listener for the redirection logic.
+
+popup.html: A simple, branded landing page for the extension popup that includes a "Go to Verbshift" button.
+
+Next.js Integration Logic (Instructions for the Web App)
+
+Please also provide the React code snippet (using useSearchParams and useEffect) that needs to be added to the Next.js /generate page to:
+
+Detect the content URL parameter.
+
+Populate the main input field with that content.
+
+(Optional) Automatically trigger the generation function if the parameter is present.
+
+Instructions for Copilot:
+
+"Please generate the complete, production-ready code for the files listed above. Ensure all URL encoding is handled correctly to prevent breaking the URL with special characters from the selected text."
