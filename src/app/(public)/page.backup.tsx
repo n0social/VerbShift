@@ -227,7 +227,7 @@ export default async function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900">Generate Content Instantly</h2>
-          <p className="mt-4 text-gray-600">Create high-quality content instantly. No payment required—it's 100% free!</p>
+          <p className="mt-4 text-gray-600">Create high-quality content instantly. No payment required—it&apos;s 100% free!</p>
           <div className="mt-6">
             <Link href="/generate-now" className="btn-primary">
               Generate Now
