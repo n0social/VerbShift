@@ -39,69 +39,6 @@ function log(message: string, data?: any) {
 }
 
 // Subscription tier config
-const SUBSCRIPTION_TIERS = {
-  FREE: { postLimit: 1, price: 0 },
-  BASIC: { postLimit: 10, price: 5.99 },
-  PREMIUM: { postLimit: 25, price: 9.99 },
-};
-
-async function checkSubscriptionLimit(userId: string, contentType: string) {
-  const subscription = await prisma.subscription.findUnique({
-    where: { userId },
-  });
-
-  // Default to free tier if no subscription
-  const tier = ((subscription?.tier || 'FREE').toUpperCase() as keyof typeof SUBSCRIPTION_TIERS);
-  const config = SUBSCRIPTION_TIERS[tier] || SUBSCRIPTION_TIERS.FREE;
-
-  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-  // Count both guides and blogs created by the user this month
-  const guideCount = await prisma.guide.count({
-    where: {
-      authorId: userId,
-      createdAt: {
-        gte: new Date(`${currentMonth}-01`),
-        lt: new Date(`${currentMonth}-31`),
-      },
-    },
-  });
-  const blogCount = await prisma.blog.count({
-    where: {
-      authorId: userId,
-      createdAt: {
-        gte: new Date(`${currentMonth}-01`),
-        lt: new Date(`${currentMonth}-31`),
-      },
-    },
-  });
-  const usage = guideCount + blogCount;
-  if (usage >= config.postLimit) {
-    throw new Error('Subscription limit reached.');
-  }
-}
-
-async function createOneTimePaymentSession(userId: string, contentType: string) {
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: `One-Time ${contentType} Generation`,
-          },
-          unit_amount: 500, // $5.00
-        },
-        quantity: 1,
-      },
-    ],
-    mode: 'payment',
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`,
-  });
-
-  return session.url;
-}
 
 // Utility to generate a slug from a string
 function slugify(text: string) {
@@ -126,20 +63,7 @@ export async function POST(request: NextRequest) {
     if (!topic || !contentType) {
       return NextResponse.json({ error: 'Topic and content type are required' }, { status: 400 });
     }
-    // Payment logic
-    if (oneTimePayment) {
-      try {
-        const paymentUrl = await createOneTimePaymentSession(session.user.id, contentType);
-        return NextResponse.json({ paymentUrl });
-      } catch (error) {
-        return NextResponse.json({ error: (error as Error).message }, { status: 400 });
-      }
-    }
-    // Subscription check
-    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-    if (!user || (user.role?.toLowerCase() !== 'admin')) {
-      await checkSubscriptionLimit(session.user.id, contentType);
-    }
+    // All users can generate content for free. No payment or subscription checks.
     const openaiApiKey = process.env.OPENAI_API_KEY;
     if (!openaiApiKey) {
       return NextResponse.json({ error: 'AI content generation failed. Please try again later or contact support.' }, { status: 500 });

@@ -41,12 +41,7 @@ export async function POST(req: NextRequest) {
       await prisma.user.update({
         where: { email: customerEmail },
         data: {
-          subscription: {
-            upsert: {
-              create: { tier, postLimit: tier === 'PREMIUM' ? 25 : 10 },
-              update: { tier, postLimit: tier === 'PREMIUM' ? 25 : 10 },
-            },
-          },
+          // Subscription logic removed; no longer updating subscription on user
         },
       });
     }

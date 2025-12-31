@@ -7,5 +7,5 @@ export default function AdminSettings() {
   const [error, setError] = useState('');
 
 
-    // Removed: Admin email scraper settings page
+    
 }

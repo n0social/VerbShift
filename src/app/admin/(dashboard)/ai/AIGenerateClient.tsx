@@ -25,6 +25,8 @@ const BLOG_PERSONALITIES = [
 ];
 
 export default function AIGenerateClient({ categories, canGenerate }: AIGenerateClientProps) {
+    // Stripe Buy Me a Coffee link
+    const buyMeCoffeeUrl = 'https://buy.stripe.com/eVq00c6yU1c2anXatz7ok01';
   const [botRunning, setBotRunning] = useState(false);
   const [botStatus, setBotStatus] = useState('');
 
@@ -179,6 +181,14 @@ export default function AIGenerateClient({ categories, canGenerate }: AIGenerate
 
   return (
     <div className="space-y-8">
+      <a
+        href={buyMeCoffeeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block mb-6 px-4 py-2 bg-yellow-400 text-black font-semibold rounded hover:bg-yellow-500 transition"
+      >
+        ☕ Buy Me a Coffee ($0.99)
+      </a>
       {/* Header */}
       <div>
                 <div className="mb-4">

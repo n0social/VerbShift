@@ -13,6 +13,8 @@ interface GeneratedContent {
 }
 
 const GenerateNowPage: React.FC = () => {
+    // Stripe Buy Me a Coffee link
+    const buyMeCoffeeUrl = 'https://buy.stripe.com/eVq00c6yU1c2anXatz7ok01';
   const [email, setEmail] = useState<string>('');
   const [topic, setTopic] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -82,6 +84,14 @@ const GenerateNowPage: React.FC = () => {
         <p className="mt-2 text-gray-600">
           Instantly generate step-by-step How-to guides and content with AI.
         </p>
+        <a
+          href={buyMeCoffeeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block mt-4 px-4 py-2 bg-yellow-400 text-black font-semibold rounded hover:bg-yellow-500 transition"
+        >
+          ☕ Buy Me a Coffee ($0.99)
+        </a>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
